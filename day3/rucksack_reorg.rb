@@ -27,7 +27,10 @@ class RucksackReorg
   end
 
   def solve2
-    "not implemented yet"
+    input.each_slice(3).map do |sack1, sack2, sack3|
+      badge = (sack1.chars.to_set & sack2.chars.to_set & sack3.chars.to_set).first
+      priority(badge)
+    end.sum
   end
 
   def self.run
