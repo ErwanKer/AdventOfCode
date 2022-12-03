@@ -8,8 +8,10 @@ For the remaining days I'll try use my tooling to scaffold my exercices :
 
 ```bash
 bundle install
-ruby init.rb day2 rock_paper_scissors
+ruby init.rb 2 rock_paper_scissors
 ruby day2/rock_paper_scissors.rb
+# Or if you just want the current day puzzle with a script name taken from puzzle name :
+ruby init.rb
 ```
 
 If you want to use this you should also connect via browser to your AoC account and retrieve your cookie session and store it in a `.session_cookie` file (look at [init.rb](init.rb) to see how it is used).

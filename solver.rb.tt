@@ -1,6 +1,6 @@
 require "active_support/all"
 
-class <%= name.classify %>
+class <%= filename.classify %>
   attr_accessor :input
 
   def initialize(input_filename)
@@ -28,4 +28,4 @@ class <%= name.classify %>
   end
 end
 
-<%= name.classify %>.run if __FILE__ == $0
+<%= filename.classify %>.run if __FILE__ == $0
