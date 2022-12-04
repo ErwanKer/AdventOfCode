@@ -16,4 +16,4 @@ ruby init.rb
 
 If you want to use this you should also connect via browser to your AoC account and retrieve your cookie session and store it in a `.session_cookie` file (look at [init.rb](init.rb) to see how it is used).
 
-Warning : the "example" file is filed with the biggest code example found, that might not always be the real puzzle example so you need to double check.
+Warning : the "example" file is found through a possibly flawed heuristic, that might not always be the real puzzle example so you need to double check.

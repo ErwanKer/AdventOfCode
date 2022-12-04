@@ -25,7 +25,13 @@ class AocDownloader
   end
 
   def download_example
-    puzzle_page.search("code").map(&:text).sort_by(&:size).last
+    # Heuristic to find the example in the puzzle page
+    example_intro = puzzle_page.search("p").find{ |para| para.text.starts_with?("For example") }
+    if example_intro.present? && example_intro.next_element.child.name == "code"
+      example_intro.next_element.text
+    else
+      puzzle_page.search("code").map(&:text).sort_by(&:size).last
+    end
   end
 
   def download_puzzle
