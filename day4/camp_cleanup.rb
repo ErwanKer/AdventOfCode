@@ -8,11 +8,17 @@ class CampCleanup
   end
 
   def solve1
-    "not implemented yet"
+    input.select do |line|
+      assignment1, assignment2 = line.split(",").map { |sec| a, b = sec.split("-").map(&:to_i); a..b }
+      assignment1.cover?(assignment2) || assignment2.cover?(assignment1)
+    end.count
   end
 
   def solve2
-    "not implemented yet"
+    input.select do |line|
+      assignment1, assignment2 = line.split(",").map { |sec| a, b = sec.split("-").map(&:to_i); a..b }
+      assignment1.cover?(assignment2) || assignment2.cover?(assignment1)
+    end.count
   end
 
   def self.run
