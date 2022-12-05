@@ -1,14 +1,43 @@
 require "active_support/all"
 
 class SupplyStack
-  attr_accessor :input
+  attr_accessor :stacks, :moves, :stack_coords
+
+  Move = Struct.new('Move', :n_crates, :from, :to)
 
   def initialize(input_filename)
-    @input = File.read(input_filename).split("\n")
+    @stacks, @moves = File.read(input_filename).split("\n\n").map{ |s| s.split("\n") }
+    parse_stacks
+    parse_moves
+  end
+
+  def parse_moves
+    @moves = moves.map do |line|
+      move = line.split.map(&:to_i).select(&:positive?)
+      Move.new(*move)
+    end
+  end
+
+  def parse_stacks
+    @stack_coords = stacks.last.chars.map(&:to_i).map.with_index.select{|c,i| c > 0}.to_h.invert
+    new_stacks = []
+    (stack_coords.count + 1).times { new_stacks.append([]) } # let's be 1-indexed instead of 0
+    stacks[...-1].reverse.each do |line|
+      crates = line.chars.map.with_index.select{|c,i| c.in? "A".."Z"}
+      crates.each do |type, stack|
+        new_stacks[stack_coords[stack]].append(type)
+      end
+    end
+    @stacks = new_stacks
   end
 
   def solve1
-    "not implemented yet"
+    moves.each do |move|
+      move.n_crates.times do
+        stacks[move.to].append(stacks[move.from].pop)
+      end
+    end
+    stacks.map(&:last).compact.join
   end
 
   def solve2
