@@ -31,17 +31,37 @@ class SupplyStack
     @stacks = new_stacks
   end
 
+  def print_stacks(pstacks)
+    length = pstacks.count
+    height = pstacks.map(&:count).max
+    res = ""
+    (0...height).reverse_each do |h|
+      (1..length).each do |l|
+        el = pstacks.dig(l, h)
+        res += el.nil? ? "     " : " [#{el}] "
+      end
+      res += "\n"
+    end
+    (1...length).each { |i| res += "  #{i}  " }
+    puts res
+  end
+
   def solve1
+    res_stacks = stacks.deep_dup
     moves.each do |move|
       move.n_crates.times do
-        stacks[move.to].append(stacks[move.from].pop)
+        res_stacks[move.to].append(res_stacks[move.from].pop)
       end
     end
-    stacks.map(&:last).compact.join
+    res_stacks.map(&:last).compact.join
   end
 
   def solve2
-    "not implemented yet"
+    res_stacks = stacks.deep_dup
+    moves.each do |move|
+      res_stacks[move.to].concat(res_stacks[move.from].pop(move.n_crates))
+    end
+    res_stacks.map(&:last).compact.join
   end
 
   def self.run
