@@ -1,24 +1,26 @@
 require "active_support/all"
 
 class TuningTrouble
-  SEQSIZE = 4
-
   attr_accessor :input
 
   def initialize(input_filename)
     @input = File.read(input_filename).strip
   end
 
-  def solve1
-    (0..(input.length - SEQSIZE)).each do |i|
-      uniq_length = input[i...(i + SEQSIZE)].chars.uniq.length
-      return i + SEQSIZE if uniq_length == SEQSIZE
+  def find_distinct_seq(seq_size)
+    (0..(input.length - seq_size)).each do |i|
+      uniq_length = input[i...(i + seq_size)].chars.uniq.length
+      return i + seq_size if uniq_length == seq_size
     end
     0 # error value
   end
 
+  def solve1
+    find_distinct_seq(4)
+  end
+
   def solve2
-    "not implemented yet"
+    find_distinct_seq(14)
   end
 
   def self.run
