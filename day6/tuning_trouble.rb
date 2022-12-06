@@ -1,14 +1,20 @@
 require "active_support/all"
 
 class TuningTrouble
+  SEQSIZE = 4
+
   attr_accessor :input
 
   def initialize(input_filename)
-    @input = File.read(input_filename).split("\n")
+    @input = File.read(input_filename).strip
   end
 
   def solve1
-    "not implemented yet"
+    (0..(input.length - SEQSIZE)).each do |i|
+      uniq_length = input[i...(i + SEQSIZE)].chars.uniq.length
+      return i + SEQSIZE if uniq_length == SEQSIZE
+    end
+    0 # error value
   end
 
   def solve2
