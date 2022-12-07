@@ -7,3 +7,5 @@ gem "activesupport", "~> 7.0"
 gem "nokogiri", "~> 1.13"
 
 gem "thor", "~> 1.2"
+
+gem "rubytree", "~> 2.0"
