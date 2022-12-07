@@ -5,7 +5,16 @@ class NoSpaceLeftOnDevice
   attr_accessor :input, :filesystem
 
   Cmd = Struct.new("Cmd", :name, :args, :res)
-  Inode = Struct.new("Inode", :type, :dsize)
+  class Inode < Tree::TreeNode
+    attr_accessor :dsize
+    alias_method :dir?, :children?
+    alias_method :file?, :leaf?
+
+    def initialize(name, dsize = 0)
+      @dsize = dsize
+      super(name)
+    end
+  end
 
   def initialize(input_filename)
     @input = File.read(input_filename)
@@ -14,7 +23,7 @@ class NoSpaceLeftOnDevice
 
   def print_filesystem
     node_printer = lambda do |node, prefix|
-      content = node.content.type == "dir" ? "dir" : "file, size=#{node.content.dsize}"
+      content = node.dir? ? "dir" : "file, size=#{node.dsize}"
       puts "#{prefix} #{node.name} (#{content})"
     end
     filesystem.print_tree(filesystem.node_depth, nil, node_printer);
@@ -23,17 +32,17 @@ class NoSpaceLeftOnDevice
   def solve1
     #print_filesystem
     filesystem.select do |node|
-      node.children? && node.content.dsize <= 100_000
-    end.map(&:content).map(&:dsize).sum
+      node.dir? && node.dsize <= 100_000
+    end.map(&:dsize).sum
   end
 
   def solve2
     total_space = 7_000_0000
-    unused_space = total_space - filesystem.content.dsize
+    unused_space = total_space - filesystem.dsize
     wanted_space = 3_000_0000 - unused_space
     filesystem.select do |node|
-      node.children? && node.content.dsize >= wanted_space
-    end.map(&:content).sort_by(&:dsize).first.dsize
+      node.dir? && node.dsize >= wanted_space
+    end.sort_by(&:dsize).first.dsize
   end
 
   def self.run
@@ -59,7 +68,7 @@ class NoSpaceLeftOnDevice
   end
 
   def generate_filesystem
-    @filesystem = Tree::TreeNode.new("/", Inode.new("dir", 0))
+    @filesystem = Inode.new("/")
     current_node = @filesystem
     parse_commands.each do |cmd|
       case cmd.name
@@ -75,15 +84,11 @@ class NoSpaceLeftOnDevice
       when "ls"
         cmd.res.each do |inode_data|
           data, name = inode_data.split
-          inode = if data.starts_with?("dir")
-            Inode.new("dir", 0)
-          else
-            Inode.new("file", data.to_i)
-          end
-          current_node << Tree::TreeNode.new(name, inode)
-          if inode.type == "file"
-            current_node.content.dsize += inode.dsize
-            current_node.parentage&.each { |node| node.content.dsize += inode.dsize }
+          inode = Inode.new(name, data.to_i)
+          current_node << inode
+          if inode.file?
+            current_node.dsize += inode.dsize
+            current_node.parentage&.each { |node| node.dsize += inode.dsize }
           end
         end
       end
