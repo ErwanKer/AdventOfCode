@@ -5,7 +5,7 @@ class NoSpaceLeftOnDevice
   attr_accessor :input, :filesystem
 
   Cmd = Struct.new("Cmd", :name, :args, :res)
-  Inode = Struct.new("Inode", :type, :size)
+  Inode = Struct.new("Inode", :type, :dsize)
 
   def initialize(input_filename)
     @input = File.read(input_filename)
@@ -14,7 +14,7 @@ class NoSpaceLeftOnDevice
 
   def print_filesystem
     node_printer = lambda do |node, prefix|
-      content = node.content.type == "dir" ? "dir" : "file, size=#{node.content.size}"
+      content = node.content.type == "dir" ? "dir" : "file, size=#{node.content.dsize}"
       puts "#{prefix} #{node.name} (#{content})"
     end
     filesystem.print_tree(filesystem.node_depth, nil, node_printer);
@@ -23,12 +23,17 @@ class NoSpaceLeftOnDevice
   def solve1
     #print_filesystem
     filesystem.select do |node|
-      node.children? && node.content.size <= 100_000
-    end.map(&:content).map(&:size).sum
+      node.children? && node.content.dsize <= 100_000
+    end.map(&:content).map(&:dsize).sum
   end
 
   def solve2
-    "not implemented yet"
+    total_space = 7_000_0000
+    unused_space = total_space - filesystem.content.dsize
+    wanted_space = 3_000_0000 - unused_space
+    filesystem.select do |node|
+      node.children? && node.content.dsize >= wanted_space
+    end.map(&:content).sort_by(&:dsize).first.dsize
   end
 
   def self.run
@@ -77,8 +82,8 @@ class NoSpaceLeftOnDevice
           end
           current_node << Tree::TreeNode.new(name, inode)
           if inode.type == "file"
-            current_node.content.size += inode.size
-            current_node.parentage&.each { |node| node.content.size += inode.size }
+            current_node.content.dsize += inode.dsize
+            current_node.parentage&.each { |node| node.content.dsize += inode.dsize }
           end
         end
       end
