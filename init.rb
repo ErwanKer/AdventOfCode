@@ -80,8 +80,9 @@ class Init < Thor::Group
     self.filename = downloader.puzzle_name.tr(" ", "_").underscore if filename.nil?
   end
 
-  def create_solver_file
+  def create_solver_files
     template("solver.rb.tt", "day#{day}/#{filename}.rb")
+    template("solver_spec.rb.tt", "day#{day}/#{filename}_spec.rb")
   end
 
   def create_puzzle_files

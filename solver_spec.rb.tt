@@ -1,0 +1,11 @@
+require_relative "./<%= filename %>"
+
+RSpec.describe <%= filename.classify %> do
+  subject { described_class.new(example, direct_input: true) }
+  describe ".method" do
+    context "first simple example" do
+      let(:example) { "EXAMPLE" }
+      #it { expect(subject.method).to eq(RESULT) }
+    end
+  end
+end
