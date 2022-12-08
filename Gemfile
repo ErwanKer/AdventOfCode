@@ -11,3 +11,7 @@ gem "thor", "~> 1.2"
 gem "rubytree", "~> 2.0"
 
 gem "daru", "~> 0.3"
+
+gem "rspec", "~> 3.12"
+
+gem "byebug", "~> 11.1"

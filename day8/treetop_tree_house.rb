@@ -1,4 +1,5 @@
 require "active_support/all"
+require "byebug"
 require "daru"
 
 class Forest < Daru::DataFrame
@@ -40,25 +41,23 @@ class TreetopTreeHouse
   end
 
   def set_line_visibility(vline, line)
-    len = vline.size - 1
+    len = vline.size
     line = line.to_a
     (1...len).each do |k|
       vline[k] = "V" if line[k] > line[...k].max
       vline[len - k - 1] = "V" if line[len - k - 1] > line[(len - k)..].max
     end
+    vline
   end
 
   def set_inner_visibility
     (1...forest.height).each { |k| set_line_visibility(vforest[k], forest[k]) }
-    (1...forest.width).each { |k| set_line_visibility(vforest.row[k], forest.row[k]) }
+    (1...forest.width).each { |k| vforest.row[k] = set_line_visibility(vforest.row[k], forest.row[k]) }
   end
 
   def solve1
     set_border_visibility
     set_inner_visibility
-    p forest
-    p vforest
-    binding.irb
     vforest.count("V")
   end
 
