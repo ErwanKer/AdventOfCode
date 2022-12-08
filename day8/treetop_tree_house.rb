@@ -5,7 +5,7 @@ class Forest < Daru::DataFrame
   attr_reader :width, :height
 
   def initialize(matrix)
-    super(matrix.map.with_index.to_h.invert)
+    super(matrix.map.with_index.map{|l, i| [i, l]}.to_h)
     @width = size
     @height = vectors.size
     self
@@ -25,22 +25,40 @@ class Forest < Daru::DataFrame
 end
 
 class TreetopTreeHouse
-  attr_accessor :forest
+  attr_accessor :forest, :vforest
 
   def initialize(input_filename)
-    @forest = Forest.new(File.readlines(input_filename, chomp: true).map(&:chars))
+    @forest = Forest.new(File.readlines(input_filename, chomp: true).map{|s| s.chars.map(&:to_i)})
+    @vforest = forest.clone
   end
 
-  def set_visibility(forest)
-    forest[0] = ["V"] * forest.width
-    forest[forest.height - 1] = ["V"] * forest.width
-    forest.row[0] = ["V"] * forest.height
-    forest.row[forest.width - 1] = ["V"] * forest.height
-    forest
+  def set_border_visibility
+    vforest[0] = ["V"] * vforest.width
+    vforest[forest.height - 1] = ["V"] * vforest.width
+    vforest.row[0] = ["V"] * vforest.height
+    vforest.row[forest.width - 1] = ["V"] * vforest.height
+  end
+
+  def set_line_visibility(vline, line)
+    len = vline.size - 1
+    line = line.to_a
+    (1...len).each do |k|
+      vline[k] = "V" if line[k] > line[...k].max
+      vline[len - k - 1] = "V" if line[len - k - 1] > line[(len - k)..].max
+    end
+  end
+
+  def set_inner_visibility
+    (1...forest.height).each { |k| set_line_visibility(vforest[k], forest[k]) }
+    (1...forest.width).each { |k| set_line_visibility(vforest.row[k], forest.row[k]) }
   end
 
   def solve1
-    vforest = set_visibility(forest.clone)
+    set_border_visibility
+    set_inner_visibility
+    p forest
+    p vforest
+    binding.irb
     vforest.count("V")
   end
 
