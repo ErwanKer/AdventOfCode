@@ -61,8 +61,22 @@ class TreetopTreeHouse
     vforest.count("V")
   end
 
+  def calc_scenic_score(i, j, line, column)
+    tree = line[i]
+    next_index = lambda { |row| row.map.with_index.find { |t, i| t >= tree }&.last }
+    left = (next_index.call(line[...i].reverse) || (i - 1)) + 1
+    right = (next_index.call(line[(i + 1)..]) || (line.size - i - 2)) + 1
+    up = (next_index.call(column[...j].reverse) || (j - 1)) + 1
+    down = (next_index.call(column[(j + 1)..]) || (column.size - j - 2)) + 1
+    left * right * up * down
+  end
+
   def solve2
-    "not implemented yet"
+    (0...forest.width).map do |i|
+      (0...forest.height).map do |j|
+        calc_scenic_score(i, j, forest[j].to_a, forest.row[i].to_a)
+      end.max
+    end.max
   end
 
   def self.run
