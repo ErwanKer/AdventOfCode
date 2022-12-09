@@ -2,6 +2,7 @@ require "active_support/all"
 require "net/http"
 require "nokogiri"
 require "thor/group"
+require "byebug"
 
 class AocHttpError < StandardError
   def initialize(response)
@@ -20,11 +21,11 @@ class AocDownloader
     @headers = { 'Cookie' => "session=#{session_secret}" }
   end
 
-  def puzzle_name
+  def parse_puzzle_name
     puzzle_page.search("h2").first.text.split(":").last.tr("-", "").strip
   end
 
-  def download_example
+  def parse_example
     # Heuristic to find the example in the puzzle page
     example_intro = puzzle_page.search("p").find{ |para| para.text.starts_with?("For example") }
     if example_intro.present? && example_intro.next_element.child.name == "code"
@@ -32,6 +33,12 @@ class AocDownloader
     else
       puzzle_page.search("code").map(&:text).sort_by(&:size).last
     end
+  end
+
+  def parse_example_solution
+    # Heuristic to find the example solution in the puzzle page
+    part_one = puzzle_page.search("article").first
+    part_one.search("code em").last.text
   end
 
   def download_puzzle
@@ -66,6 +73,7 @@ class Init < Thor::Group
 
   argument :day, type: :numeric, required: false, desc: "Number of the day in the month of the puzzle you want"
   argument :filename, type: :string, required: false, desc: "Snakecase version of the name you want, we will create filename.rb"
+  attr_accessor :example, :example_solution
 
   def self.exit_on_failure?
     true
@@ -77,7 +85,9 @@ class Init < Thor::Group
 
   def setup
     self.day = Date.current.day if day.nil?
-    self.filename = downloader.puzzle_name.tr(" ", "_").underscore if filename.nil?
+    self.filename = downloader.parse_puzzle_name.tr(" ", "_").underscore if filename.nil?
+    self.example = downloader.parse_example
+    self.example_solution = downloader.parse_example_solution
   end
 
   def create_solver_files
@@ -86,7 +96,7 @@ class Init < Thor::Group
   end
 
   def create_puzzle_files
-    create_file("day#{day}/example") { downloader.download_example }
+    create_file("day#{day}/example") { example }
     create_file("day#{day}/puzzle") { downloader.download_puzzle }
   end
 

@@ -5,11 +5,7 @@ class <%= filename.classify %>
   attr_accessor :input
 
   def initialize(input, direct_input: false)
-    @input = if direct_input
-      input
-    else
-      File.read(input)
-    end.split("\n")
+    @input = (direct_input ? input : File.read(input)).split("\n")
   end
 
   def solve1

@@ -3,8 +3,8 @@ require "active_support/all"
 class TuningTrouble
   attr_accessor :input
 
-  def initialize(input_filename)
-    @input = File.read(input_filename).strip
+  def initialize(input, direct_input: false)
+    @input = (direct_input ? input : File.read(input)).strip
   end
 
   def find_distinct_seq(seq_size)
@@ -24,15 +24,22 @@ class TuningTrouble
   end
 
   def self.run
-    source_folder = File.dirname(__FILE__)
-    example_solver = new("#{source_folder}/example")
-    puzzle_solver = new("#{source_folder}/puzzle")
-    puts "Solving first part :"
-    puts "=> example solution : #{example_solver.solve1}"
-    puts "=> puzzle solution : #{puzzle_solver.solve1}"
-    puts "Solving second part :"
-    puts "=> example solution : #{example_solver.solve2}"
-    puts "=> puzzle solution : #{puzzle_solver.solve2}"
+    if ARGV.present?
+      ARGV.each do |arg|
+        solver = new(arg, direct_input: true)
+        puts "Solving for {#{arg}}: solution 1 is #{solver.solve1} and solution 2 is #{solver.solve2}"
+      end
+    else
+      source_folder = File.dirname(__FILE__)
+      example_solver = new("#{source_folder}/example")
+      puzzle_solver = new("#{source_folder}/puzzle")
+      puts "Solving first part :"
+      puts "=> example solution : #{example_solver.solve1}"
+      puts "=> puzzle solution : #{puzzle_solver.solve1}"
+      puts "Solving second part :"
+      puts "=> example solution : #{example_solver.solve2}"
+      puts "=> puzzle solution : #{puzzle_solver.solve2}"
+    end
   end
 end
 
