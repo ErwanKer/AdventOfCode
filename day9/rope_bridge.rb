@@ -7,14 +7,14 @@ class Grid
   alias_method :to_s, :inspect
 
   def initialize(estimated_size)
-    estimated_size = 10000
+    #estimated_size = 10000
     @nrows, @ncols = [estimated_size] * 2
     @max_row, @max_col = [estimated_size - 1] * 2
     @matrix = estimated_size.times.map { ["."] * estimated_size }
     #@head_row, @tail_row = [@max_row] * 2
     #@head_col, @tail_col = [0] * 2
     @head_row, @head_col, @tail_row, @tail_col = [5000]*4
-    matrix[tail_row][tail_col] = "#"
+    #matrix[tail_row][tail_col] = "#"
   end
 
   def inspect
@@ -70,10 +70,68 @@ class Grid
   end
 end
 
+Coords = Struct.new("Coords", :row, :col)
+
+class Grid2 < Grid
+  attr_accessor :rope
+
+  def initialize(estimated_size)
+    super(estimated_size)
+    @rope = 10.times.map { Coords.new(max_row / 2, max_col / 2) }
+  end
+
+  def inspect
+    res = matrix.map(&:dup)
+    res[max_row / 2][max_row / 2] = "s"
+    (1..9).to_a.reverse.each do |i|
+      coords = rope[i]
+      res[coords.row][coords.col] = i.to_s
+    end
+    res[rope[0].row][rope[0].col] = "H"
+    res.map(&:join).join("\n")
+  end
+
+  def move(dir, steps)
+    matrix[rope[9].row][rope[9].col] = "#"
+    return if steps <= 0
+
+    case dir
+    when "U"
+      rope[0].row-= 1
+    when "D"
+      rope[0].row += 1
+    when "L"
+      rope[0].col -= 1
+    when "R"
+      rope[0].col += 1
+    end
+    #resize(steps) if head_row > max_row || head_col > max_col
+    tail_follow(0)
+
+    move(dir, steps - 1)
+  end
+
+  def tail_follow(n)
+    return if n > 8
+    head, tail = rope[n..(n + 1)]
+    return if (head.row - tail.row).abs <= 1 && (head.col - tail.col).abs <= 1
+
+    if head.col != tail.col
+      tail.col += (head.col - tail.col).positive? ? 1 : -1
+    end
+
+    if head.row != tail.row
+      tail.row += (head.row - tail.row).positive? ? 1 : -1
+    end
+
+    tail_follow(n + 1)
+  end
+end
+
 Move = Struct.new('Move', :dir, :steps)
 
 class RopeBridge
-  attr_accessor :moves, :grid
+  attr_accessor :moves, :grid, :grid2
 
   def initialize(input, direct_input: false)
     @moves = if direct_input
@@ -85,6 +143,7 @@ class RopeBridge
       Move.new(dir, steps.to_i)
     end
     @grid = Grid.new(moves.map(&:steps).max)
+    @grid2 = Grid2.new(10000)
   end
 
   def solve1
@@ -93,7 +152,8 @@ class RopeBridge
   end
 
   def solve2
-    "not implemented yet"
+    moves.each { |move| grid2.move(move.dir, move.steps) }
+    grid2.count("#")
   end
 
   def self.run
@@ -107,8 +167,8 @@ class RopeBridge
       example_solver = new("#{source_folder}/example")
       puzzle_solver = new("#{source_folder}/puzzle")
       puts "Solving first part :"
-      puts "=> example solution : #{example_solver.solve1}"
-      puts "=> puzzle solution : #{puzzle_solver.solve1}"
+      #puts "=> example solution : #{example_solver.solve1}"
+      #puts "=> puzzle solution : #{puzzle_solver.solve1}"
       puts "Solving second part :"
       puts "=> example solution : #{example_solver.solve2}"
       puts "=> puzzle solution : #{puzzle_solver.solve2}"
