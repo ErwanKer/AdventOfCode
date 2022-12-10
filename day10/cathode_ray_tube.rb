@@ -33,8 +33,34 @@ class CathodeRayTube
     signal_strengths.values.sum
   end
 
+  def pixel(register, position)
+    if [position - 1, 0].max <= register && register <= [position + 1, 40].min
+      "#"
+    else
+      "."
+    end
+  end
+
   def solve2
-    "not implemented yet"
+    crt = [""]
+    cycles = 0
+    register_value = 1
+    input.each do |line|
+      case line.split
+      in ["noop"]
+        crt[-1] += pixel(register_value, cycles % 40)
+        cycles += 1
+      in "addx", num
+        crt[-1] += pixel(register_value, cycles % 40)
+        cycles += 1
+        crt.append("") if (cycles % 40 == 0)
+        crt[-1] += pixel(register_value, cycles % 40)
+        cycles += 1
+        register_value += num.to_i
+      end
+      crt.append("") if (cycles % 40 == 0)
+    end
+    crt.join("\n")
   end
 
   def self.run
@@ -51,8 +77,8 @@ class CathodeRayTube
       puts "=> example solution : #{example_solver.solve1}"
       puts "=> puzzle solution : #{puzzle_solver.solve1}"
       puts "Solving second part :"
-      puts "=> example solution : #{example_solver.solve2}"
-      puts "=> puzzle solution : #{puzzle_solver.solve2}"
+      puts "=> example solution : \n#{example_solver.solve2}"
+      puts "=> puzzle solution : \n#{puzzle_solver.solve2}"
     end
   end
 end
