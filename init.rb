@@ -71,9 +71,9 @@ class Init < Thor::Group
     ruby init.rb # will download current day puzzle and use puzzle name for the filename
   DOC
 
-  argument :day, type: :numeric, required: false, desc: "Number of the day in the month of the puzzle you want"
+  argument :day_num, type: :numeric, required: false, desc: "Number of the day in the month of the puzzle you want"
   argument :filename, type: :string, required: false, desc: "Snakecase version of the name you want, we will create filename.rb"
-  attr_accessor :example, :example_solution
+  attr_accessor :example, :example_solution, :day_name
 
   def self.exit_on_failure?
     true
@@ -84,26 +84,27 @@ class Init < Thor::Group
   end
 
   def setup
-    self.day = Date.current.day if day.nil?
+    self.day_num = Date.current.day if day_num.nil?
+    self.day_name = "day%02d" % day_num
     self.filename = downloader.parse_puzzle_name.tr(" ", "_").underscore if filename.nil?
     self.example = downloader.parse_example
     self.example_solution = downloader.parse_example_solution
   end
 
   def create_solver_files
-    template("solver.rb.tt", "day#{day}/#{filename}.rb")
-    template("solver_spec.rb.tt", "day#{day}/#{filename}_spec.rb")
+    template("solver.rb.tt", "#{day_name}/#{filename}.rb")
+    template("solver_spec.rb.tt", "#{day_name}/#{filename}_spec.rb")
   end
 
   def create_puzzle_files
-    create_file("day#{day}/example") { example }
-    create_file("day#{day}/puzzle") { downloader.download_puzzle }
+    create_file("#{day_name}/example") { example }
+    create_file("#{day_name}/puzzle") { downloader.download_puzzle }
   end
 
   private
 
   def downloader
-    @downloader ||= AocDownloader.new(day)
+    @downloader ||= AocDownloader.new(day_num)
   end
 end
 
