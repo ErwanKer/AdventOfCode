@@ -9,7 +9,28 @@ class CathodeRayTube
   end
 
   def solve1
-    "not implemented yet"
+    cycles = 1
+    register_value = 1
+    signal_strengths = {}
+    next_to_record = 20
+    input.each do |line|
+      case line.split
+      in ["noop"]
+        cycles += 1
+        record = cycles == next_to_record
+      in "addx", num
+        cycles += 2
+        register_value += num.to_i
+        record = cycles.in? [next_to_record, next_to_record + 1]
+      end
+      if record
+        signal_strengths[next_to_record] = register_value
+        signal_strengths[next_to_record] -= num.to_i if (cycles % 10) == 1
+        signal_strengths[next_to_record] *= next_to_record
+        next_to_record += 40
+      end
+    end
+    signal_strengths.values.sum
   end
 
   def solve2
