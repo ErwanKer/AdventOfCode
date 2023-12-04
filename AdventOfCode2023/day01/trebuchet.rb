@@ -8,8 +8,14 @@ class Trebuchet
     @input = (direct_input ? input : File.read(input)).split("\n")
   end
 
+  def first_digit(str)
+    str.split("").find{|x| x.in? (0..9).map(&:to_s)}
+  end
+
   def solve1
-    "not implemented yet"
+    input.map do |line|
+      (first_digit(line) + first_digit(line.reverse)).to_i
+    end.sum
   end
 
   def solve2
