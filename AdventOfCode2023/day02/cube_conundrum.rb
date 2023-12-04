@@ -38,7 +38,9 @@ class CubeConundrum
   end
 
   def solve2
-    "not implemented yet"
+    games.map do |_, game_cubes|
+      game_cubes.map(&:red).max * game_cubes.map(&:green).max * game_cubes.map(&:blue).max
+    end.sum
   end
 
   def self.run
