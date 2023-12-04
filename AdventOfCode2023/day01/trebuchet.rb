@@ -4,12 +4,38 @@ require "byebug"
 class Trebuchet
   attr_accessor :input
 
+  DIGITS = {
+    "one" => "1",
+    "two" => "2",
+    "three" => "3",
+    "four" => "4",
+    "five" => "5",
+    "six" => "6",
+    "seven" => "7",
+    "eight" => "8",
+    "nine" => "9"
+  }
+
   def initialize(input, direct_input: false)
     @input = (direct_input ? input : File.read(input)).split("\n")
   end
 
   def first_digit(str)
-    str.split("").find{|x| x.in? (0..9).map(&:to_s)}
+    str.split("").find { |x| x.in? (0..9).map(&:to_s) }
+  end
+
+  def first_digit_extra(str, reverse: false)
+    written_digits = reverse ? DIGITS.keys.map(&:reverse) : DIGITS.keys
+    digits = written_digits + DIGITS.values
+    res = nil
+    str.length.times do |i|
+      res = digits.find { |d| str[i..].starts_with?(d) }
+      break if res
+    end
+    return res if res.in? DIGITS.values
+
+    res = res.reverse if reverse
+    DIGITS[res]
   end
 
   def solve1
@@ -19,7 +45,9 @@ class Trebuchet
   end
 
   def solve2
-    "not implemented yet"
+    input.map do |line|
+      (first_digit_extra(line) + first_digit_extra(line.reverse, reverse: true)).to_i
+    end.sum
   end
 
   def self.run
