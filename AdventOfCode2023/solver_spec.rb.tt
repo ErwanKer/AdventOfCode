@@ -12,4 +12,15 @@ RSpec.describe <%= filename.classify %> do
       it { expect(subject.solve1).to eq(<%= Integer(example_solution) rescue example_solution %>) }
     end
   end
+
+  describe ".solve2" do
+    context "puzzle example" do
+      let(:example) do
+        <<~EXAMPLE
+<%= example.split("\n").map { |s| " " * 10 + s }.join("\n") %>
+        EXAMPLE
+      end
+      it { expect(subject.solve2).to eq("???") }
+    end
+  end
 end
