@@ -38,7 +38,7 @@ RSpec.describe GearRatio do
           .664.598..
         EXAMPLE
       end
-      it { expect(subject.solve2).to eq("???") }
+      it { expect(subject.solve2).to eq(467835) }
     end
   end
 end

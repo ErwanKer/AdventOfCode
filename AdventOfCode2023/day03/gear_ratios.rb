@@ -24,13 +24,13 @@ class GearRatio
 
   def solve1
     numbers = []
-    input.scan(/\d+/) do |num| 
+    input.scan(/\d+/) do |num|
       numbers << [num, Regexp.last_match.offset(0)]
     end
     numbers.select! do |num, positions|
       x, y = positions
       x -= 1
-      y += 1 
+      y += 1
       remains = get_surround(x, y).gsub(num, "").gsub(".", "")
       remains.present?
     end
@@ -38,7 +38,27 @@ class GearRatio
   end
 
   def solve2
-    "not implemented yet"
+    numbers = []
+    input.scan(/\d+/) do |num|
+      numbers << [num, Regexp.last_match.offset(0)]
+    end
+    gears = Hash.new { |h,k| h[k] = [] }
+    numbers.each do |num, positions|
+      x, y = positions
+      x -= 1
+      y += 1
+      [
+        [x - line_offset, y - line_offset],
+        [x, y],
+        [x + line_offset, y + line_offset]
+      ].each do |z, w|
+        gear_local_pos = get_section(z, w).index("*")
+        gears[z + gear_local_pos].append(num.to_i) if gear_local_pos
+      end
+    end
+    gears.values.map do |vals|
+      vals[0] * (vals[1] || 0)
+    end.sum
   end
 
   def self.run
