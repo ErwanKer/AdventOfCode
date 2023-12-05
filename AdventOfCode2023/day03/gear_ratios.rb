@@ -2,14 +2,39 @@ require "active_support/all"
 require "byebug"
 
 class GearRatio
-  attr_accessor :input
+  attr_accessor :input, :line_offset, :max_len
 
   def initialize(input, direct_input: false)
-    @input = (direct_input ? input : File.read(input)).split("\n")
+    @input = (direct_input ? input : File.read(input))
+    @line_offset = @input.index("\n") + 1
+    @max_len = @input.length
+  end
+
+  def sanitized(coord)
+    [[0, coord].max, max_len].min
+  end
+
+  def get_section(x, y)
+    input[sanitized(x)...sanitized(y)] || ""
+  end
+
+  def get_surround(x, y)
+    get_section(x - line_offset, y - line_offset) + get_section(x, y) + get_section(x + line_offset, y + line_offset)
   end
 
   def solve1
-    "not implemented yet"
+    numbers = []
+    input.scan(/\d+/) do |num| 
+      numbers << [num, Regexp.last_match.offset(0)]
+    end
+    numbers.select! do |num, positions|
+      x, y = positions
+      x -= 1
+      y += 1 
+      remains = get_surround(x, y).gsub(num, "").gsub(".", "")
+      remains.present?
+    end
+    numbers.map(&:first).map(&:to_i).sum
   end
 
   def solve2
