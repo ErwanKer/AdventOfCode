@@ -30,7 +30,7 @@ RSpec.describe Scratchcard do
           Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11
         EXAMPLE
       end
-      it { expect(subject.solve2).to eq("???") }
+      it { expect(subject.solve2).to eq(30) }
     end
   end
 end

@@ -22,7 +22,13 @@ class Scratchcard
   end
 
   def solve2
-    "not implemented yet"
+    card_counts = [1] * cards.size
+    cards.each.with_index do |card, i|
+      wins = (card.winners & card.numbers).size
+      last_card = [i + wins, cards.size].min
+      ((i + 1)..last_card).each { |k| card_counts[k] += card_counts[i] }
+    end
+    card_counts.sum
   end
 
   def self.run
