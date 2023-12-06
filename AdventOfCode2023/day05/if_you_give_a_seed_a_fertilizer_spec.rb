@@ -84,7 +84,7 @@ RSpec.describe IfYouGiveASeedAFertilizer do
           56 93 4
         EXAMPLE
       end
-      it { expect(subject.solve2).to eq("???") }
+      it { expect(subject.solve2).to eq(46) }
     end
   end
 end

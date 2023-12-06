@@ -1,4 +1,5 @@
 require "active_support/all"
+require "progress_bar"
 require "byebug"
 
 class IfYouGiveASeedAFertilizer
@@ -44,20 +45,30 @@ class IfYouGiveASeedAFertilizer
     end.to_h
   end
 
+  def location(seed)
+    curr_map = maps["seed"]
+    curr_val = seed
+    while curr_map.destination != "location"
+      curr_val = curr_map.mapping[curr_val]
+      curr_map = maps[curr_map.destination]
+    end
+    curr_map.mapping[curr_val]
+  end
+
   def solve1
-    seeds.map do |seed|
-      curr_map = maps["seed"]
-      curr_val = seed
-      while curr_map.destination != "location"
-        curr_val = curr_map.mapping[curr_val]
-        curr_map = maps[curr_map.destination]
-      end
-      curr_map.mapping[curr_val]
-    end.min
+    seeds.map { |seed| location(seed) }.min
   end
 
   def solve2
-    "not implemented yet"
+    bar = ProgressBar.new(seeds.each_slice(2).map(&:last).sum)
+    min_loc = nil
+    seeds.each_slice(2) do |start, length|
+      (start..(start + length)).each do |seed|
+        min_loc = [min_loc, location(seed)].compact.min
+        bar.increment!
+      end
+    end
+    min_loc
   end
 
   def self.run
