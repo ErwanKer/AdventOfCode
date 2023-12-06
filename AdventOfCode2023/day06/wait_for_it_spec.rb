@@ -22,7 +22,7 @@ RSpec.describe WaitForIt do
           Distance:  9  40  200
         EXAMPLE
       end
-      it { expect(subject.solve2).to eq("???") }
+      it { expect(subject.solve2).to eq(71503) }
     end
   end
 end
