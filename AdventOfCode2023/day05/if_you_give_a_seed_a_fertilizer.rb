@@ -60,15 +60,15 @@ class IfYouGiveASeedAFertilizer
   end
 
   def solve2
-    bar = ProgressBar.new(seeds.each_slice(2).map(&:last).sum)
-    min_loc = nil
-    seeds.each_slice(2) do |start, length|
-      (start..(start + length)).each do |seed|
-        min_loc = [min_loc, location(seed)].compact.min
-        bar.increment!
-      end
-    end
-    min_loc
+    seeds.each_slice(2).map do |start, length|
+      Ractor.new(start, length, self) do |start, length, meta_class|
+        min_loc = nil
+        (start..(start + length)).each do |seed|
+          min_loc = [min_loc, meta_class.location(seed)].compact.min
+        end
+        min_loc
+      end.take
+    end.min
   end
 
   def self.run
