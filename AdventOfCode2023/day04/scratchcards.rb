@@ -2,14 +2,23 @@ require "active_support/all"
 require "byebug"
 
 class Scratchcard
-  attr_accessor :input
+  attr_accessor :cards
+
+  Card = Struct.new(:winners, :numbers)
 
   def initialize(input, direct_input: false)
-    @input = (direct_input ? input : File.read(input)).split("\n")
+    lines = (direct_input ? input : File.read(input)).split("\n")
+    @cards = lines.map do |line|
+      wins, nums = /.*: ([\d+ ]+) \| ([\d+ ]+)/.match(line).captures
+      Card.new(wins.split.map(&:to_i), nums.split.map(&:to_i))
+    end
   end
 
   def solve1
-    "not implemented yet"
+    cards.map do |card|
+      wins = (card.winners & card.numbers).size
+      wins.positive? ? 2**(wins - 1) : 0
+    end.sum
   end
 
   def solve2
