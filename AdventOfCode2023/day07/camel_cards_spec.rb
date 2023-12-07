@@ -28,7 +28,27 @@ RSpec.describe CamelCard do
           QQQJA 483
         EXAMPLE
       end
-      it { expect(subject.solve2).to eq("???") }
+
+      it { expect(subject.solve2).to eq(5905) }
+    end
+
+    context "all individuals cards + joker" do
+      let(:example) do
+        <<~EXAMPLE
+          2J364 2
+          2J354 3
+        EXAMPLE
+      end
+      it { expect(subject.solve2).to eq(7) }
+    end
+
+    context "with puzzle input" do
+      let(:example) { File.read("#{File.dirname(__FILE__)}/puzzle") }
+
+      it "does not give one of the wrong answers" do
+        wrong_answers = [251191161, 249916827, 250084338, 250282434, 250531671]
+        expect(wrong_answers).not_to include(subject.solve2)
+      end
     end
   end
 end
