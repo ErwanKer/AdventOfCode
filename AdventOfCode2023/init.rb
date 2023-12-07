@@ -15,6 +15,8 @@ class Init < Thor::Group
 
   argument :day_num, type: :numeric, required: false, desc: "Number of the day in the month of the puzzle you want"
   argument :filename, type: :string, required: false, desc: "Snakecase version of the name you want, we will create filename.rb"
+  class_option :commit, type: :boolean, default: true, desc: "Commit after generation"
+
   attr_accessor :example, :example_solution, :day_name
 
   def self.exit_on_failure?
@@ -44,6 +46,8 @@ class Init < Thor::Group
   end
 
   def commit_result
+    return unless @options["commit"]
+
     if check_solver_files
       Git.commit "[#{YEAR}-#{day_name}] Add solution scaffold"
     else

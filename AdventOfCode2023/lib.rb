@@ -67,3 +67,32 @@ class Git
     end
   end
 end
+
+class Solver
+  def solve1
+    raise NotImplementedError
+  end
+
+  def solve2
+    raise NotImplementedError
+  end
+
+  def self.run
+    if ARGV.present?
+      ARGV.each do |arg|
+        solver = new(arg, direct_input: true)
+        puts "Solving for {#{arg}}: solution 1 is #{solver.solve1} and solution 2 is #{solver.solve2}"
+      end
+    else
+      source_folder = File.dirname(self.instance_method("solve1").source_location.first)
+      example_solver = new("#{source_folder}/example")
+      puzzle_solver = new("#{source_folder}/puzzle")
+      puts "Solving first part :"
+      puts "=> example solution : #{example_solver.solve1}"
+      puts "=> puzzle solution : #{puzzle_solver.solve1}"
+      puts "Solving second part :"
+      puts "=> example solution : #{example_solver.solve2}"
+      puts "=> puzzle solution : #{puzzle_solver.solve2}"
+    end
+  end
+end
