@@ -3,15 +3,27 @@ require "active_support/all"
 require "byebug"
 
 class HauntedWasteland < Solver
-  attr_accessor :input
+  attr_accessor :instructions, :map
 
   def initialize(input, direct_input: false)
     lines = (direct_input ? input : File.read(input)).split("\n")
-    @input = lines
+    @instructions = lines.first.chars
+    @map = lines[2..].map do |line|
+      node, paths = line.split(" = ")
+      left, right = paths.tr("()", "").split(", ")
+      [node, {"L" => left, "R" => right}]
+    end.to_h
   end
 
   def solve1
-    "not implemented yet"
+    node = "AAA"
+    steps = 0
+    while node != "ZZZ"
+      direction = instructions[steps % instructions.size]
+      node = map[node][direction]
+      steps += 1
+    end
+    steps
   end
 
   def solve2
