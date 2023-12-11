@@ -27,8 +27,22 @@ class HauntedWasteland < Solver
   end
 
   def solve2
-    "not implemented yet"
+    nodes = map.keys.select { |node| node.ends_with?("A") }
+    paths = nodes.map do |starting_node|
+
+    endgit 
+    steps = 0
+    until nodes.all? { |node| node.ends_with?("Z") }
+      p [steps, nodes]
+      direction = instructions[steps % instructions.size]
+      nodes = nodes.map { |node| map[node][direction] }
+      steps += 1
+    end
+    steps
   end
 end
 
 HauntedWasteland.run if __FILE__ == $0
+
+9_123_456_789 too low
+625_203_587

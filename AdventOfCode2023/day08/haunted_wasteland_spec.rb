@@ -23,6 +23,20 @@ RSpec.describe HauntedWasteland do
       ZZZ = (ZZZ, ZZZ)
     EXAMPLE
   end
+  let(:puzzle_example3) do
+    <<~EXAMPLE
+      LR
+
+      11A = (11B, XXX)
+      11B = (XXX, 11Z)
+      11Z = (11B, XXX)
+      22A = (22B, XXX)
+      22B = (22C, 22C)
+      22C = (22Z, 22Z)
+      22Z = (22B, 22B)
+      XXX = (XXX, XXX)
+    EXAMPLE
+  end
   let(:puzzle_input) { File.read("#{File.dirname(__FILE__)}/puzzle") }
 
   subject { described_class.new(example, direct_input: true) }
@@ -45,7 +59,7 @@ RSpec.describe HauntedWasteland do
     context "puzzle example" do
       let(:example) { puzzle_example3 }
 
-      it { expect(subject.solve2).to eq("???") }
+      it { expect(subject.solve2).to eq(6) }
     end
   end
 end
