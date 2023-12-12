@@ -27,7 +27,7 @@ RSpec.describe HotSpring do
     context "puzzle example" do
       let(:example) { puzzle_example }
 
-      it { expect(subject.solve2).to eq("???") }
+      it { expect(subject.solve2).to eq(525152) }
     end
   end
 end
