@@ -1,5 +1,6 @@
 require_relative "../lib.rb"
 require "active_support/all"
+require "progress_bar"
 require "byebug"
 
 class HauntedWasteland < Solver
@@ -28,21 +29,23 @@ class HauntedWasteland < Solver
 
   def solve2
     nodes = map.keys.select { |node| node.ends_with?("A") }
+    bar = ProgressBar.new(nodes.size)
     paths = nodes.map do |starting_node|
-
-    endgit 
-    steps = 0
-    until nodes.all? { |node| node.ends_with?("Z") }
-      p [steps, nodes]
-      direction = instructions[steps % instructions.size]
-      nodes = nodes.map { |node| map[node][direction] }
-      steps += 1
+      node = starting_node
+      step = 0
+      path = []
+      until (curr_sit = [node, step % instructions.size]).in? path
+        path << curr_sit
+        direction = instructions[step % instructions.size]
+        node = map[node][direction]
+        step += 1
+      end
+      bar.increment!
+      path.map(&:first)
     end
-    steps
+    endings = paths.map { |nodes| nodes.map.with_index.find { |node, i| node.ends_with?("Z") } }
+    endings.map(&:last).reduce(1, :lcm)
   end
 end
 
 HauntedWasteland.run if __FILE__ == $0
-
-9_123_456_789 too low
-625_203_587
