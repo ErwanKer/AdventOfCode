@@ -29,6 +29,35 @@ class PointOfIncidence < Solver
     find_h_reflection_number(pattern.transpose) || find_h_reflection_number(pattern) * 100
   end
 
+  def distance(l1, l2)
+    l1.zip(l2).count { |a, b| a != b } rescue l1.size
+  end
+
+  def sis_reflection?(h_index, pattern)
+    dist = 0
+    found_smudge = false
+    while dist <= h_index
+      l1 = pattern[h_index - dist]
+      l2 = pattern[h_index + 1 + dist]
+      break if l1 != l2 && (found_smudge || (d12 = distance(l1, l2)) > 1)
+
+      found_smudge = true if d12 == 1
+      dist += 1
+    end
+
+    found_smudge && dist >= 1 && (dist > h_index || h_index + dist >= (pattern.size - 1))
+  end
+
+  def sfind_h_reflection_number(pattern)
+    pattern.size.times { |h_index| return h_index + 1 if sis_reflection?(h_index, pattern) }
+
+    nil
+  end
+
+  def sfind_reflection_transformed_number(pattern)
+    sfind_h_reflection_number(pattern.transpose) || sfind_h_reflection_number(pattern) * 100
+  end
+
   def print_reflections
     patterns.each do |pattern|
       byebug
@@ -59,7 +88,9 @@ class PointOfIncidence < Solver
   end
 
   def solve2
-    "not implemented yet"
+    patterns.map do |pattern|
+      sfind_reflection_transformed_number(pattern)
+    end.sum
   end
 end
 
