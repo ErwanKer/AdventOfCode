@@ -31,7 +31,7 @@ RSpec.describe ParabolicReflectorDish do
     context "puzzle example" do
       let(:example) { puzzle_example }
 
-      it { expect(subject.solve2).to eq("???") }
+      it { expect(subject.solve2).to eq(64) }
     end
   end
 end
