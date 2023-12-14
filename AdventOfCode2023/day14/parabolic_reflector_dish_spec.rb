@@ -3,16 +3,16 @@ require_relative "./parabolic_reflector_dish"
 RSpec.describe ParabolicReflectorDish do
   let(:puzzle_example) do
     <<~EXAMPLE
-      OOOO.#.O.. 10
-      OO..#....#  9
-      OO..O##..O  8
-      O..#.OO...  7
-      ........#.  6
-      ..#....#.#  5
-      ..O..#.O.O  4
-      ..O.......  3
-      #....###..  2
-      #....#....  1
+      O....#....
+      O.OO#....#
+      .....##...
+      OO.#O....O
+      .O.....O#.
+      O.#..O.#.#
+      ..O..#O..O
+      .......O..
+      #....###..
+      #OO..#....
     EXAMPLE
   end
   let(:puzzle_input) { File.read("#{File.dirname(__FILE__)}/puzzle") }
